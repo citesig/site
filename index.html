@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CiteSig — an open protocol for signed factual claims</title>
+<meta name="description" content="CiteSig is an open protocol for embedding cryptographic verification signatures inside factual claims — a trust layer for the AI era. v0.1 draft spec published.">
+<meta property="og:title" content="CiteSig — signed factual claims for the AI era">
+<meta property="og:description" content="An open protocol for embedding cryptographic verification signatures inside factual claims. v0.1 draft spec published.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://citesig.org">
+<meta property="og:image" content="https://citesig.org/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://citesig.org/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<style>
+:root {
+  --bg: #F9F8F5;
+  --surface: #FFFFFF;
+  --ink: #0A1128;
+  --muted: #5A5F6F;
+  --faint: #A7ACB8;
+  --border: #E4E1D8;
+  --accent: #20808D;
+  --accent-tint: #E8F1F2;
+  --serif: 'Instrument Serif', ui-serif, Georgia, serif;
+  --sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.65;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.04 0 0 0 0 0.07 0 0 0 0 0.16 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 88px 32px 48px;
+  flex: 1;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-tint);
+}
+
+h1.wordmark {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(64px, 11vw, 120px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin: 0 0 24px;
+  color: var(--ink);
+}
+
+h1.wordmark em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+h1.wordmark .tm {
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: 0.22em;
+  font-weight: 500;
+  vertical-align: super;
+  color: var(--muted);
+  margin-left: 0.08em;
+  letter-spacing: 0;
+}
+
+.tagline {
+  font-family: var(--serif);
+  font-size: clamp(24px, 3.5vw, 32px);
+  font-style: italic;
+  line-height: 1.35;
+  color: var(--ink);
+  margin: 0 0 56px;
+  max-width: 560px;
+}
+
+.tagline em {
+  color: var(--accent);
+  font-style: italic;
+}
+
+section {
+  margin: 0 0 48px;
+}
+
+section h2 {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+section p {
+  margin: 0 0 16px;
+  color: var(--ink);
+}
+
+section p.muted {
+  color: var(--muted);
+}
+
+section ul {
+  margin: 0 0 16px;
+  padding-left: 0;
+  list-style: none;
+}
+
+section ul li {
+  padding: 8px 0 8px 28px;
+  position: relative;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border);
+}
+
+section ul li:last-child {
+  border-bottom: none;
+}
+
+section ul li::before {
+  content: "→";
+  position: absolute;
+  left: 4px;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-weight: 500;
+}
+
+section ul li strong {
+  font-weight: 600;
+  color: var(--ink);
+  display: block;
+  margin-bottom: 2px;
+}
+
+section ul li span {
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.compare {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 0 0 20px;
+}
+
+@media (min-width: 640px) {
+  .compare { grid-template-columns: 1fr 1fr; }
+}
+
+.compare .card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px 22px;
+}
+
+.compare .card.us {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
+
+.compare .card .cat {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin: 0 0 12px;
+}
+
+.compare .card.us .cat {
+  color: var(--accent);
+}
+
+.compare .card .who {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.25;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+
+.compare .card .who em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.compare .card .what {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.compare-pull {
+  background: var(--accent-tint);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  padding: 18px 22px;
+  margin: 20px 0 0;
+}
+
+.compare-pull p {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 1.45;
+  font-style: italic;
+  color: var(--ink);
+}
+
+.compare-pull p em {
+  color: var(--accent);
+  font-style: italic;
+}
+
+.spec-preview {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 0 0 12px;
+  box-shadow: 0 1px 0 rgba(10, 17, 40, 0.03), 0 2px 8px rgba(10, 17, 40, 0.04);
+}
+
+.spec-preview .filename {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: #FBFAF6;
+  letter-spacing: 0.04em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.spec-preview .filename .status {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.spec-preview pre {
+  margin: 0;
+  padding: 20px 16px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink);
+  overflow-x: auto;
+  background: var(--surface);
+}
+
+.spec-preview pre .k { color: #8B4A2B; }        /* HTML tag/attribute keyword */
+.spec-preview pre .v { color: var(--accent); }  /* value */
+.spec-preview pre .c { color: var(--faint); font-style: italic; } /* comment */
+
+.status-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px 24px;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+}
+
+.status-row:first-child { padding-top: 0; }
+.status-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+.status-row .label {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.status-row .value {
+  font-weight: 500;
+  color: var(--ink);
+  text-align: right;
+}
+
+.status-row .value.done {
+  color: var(--accent);
+}
+
+.status-row .value .spec-link {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-tint);
+  transition: border-color 120ms ease;
+}
+.status-row .value .spec-link:hover {
+  border-bottom-color: var(--accent);
+}
+
+.signers-block {
+  margin-top: 24px;
+  padding: 20px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.signers-block h3 {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin: 0 0 14px;
+  font-weight: 500;
+}
+.signer-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.signer-card:last-child { border-bottom: none; padding-bottom: 0; }
+.signer-card:first-child { padding-top: 0; }
+.signer-name {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.signer-name .name {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--ink);
+}
+.signer-name .name a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-tint);
+}
+.signer-name .name a:hover { border-bottom-color: var(--accent); }
+.signer-name .since {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--faint);
+  letter-spacing: 0.04em;
+}
+.signer-did {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  word-break: break-all;
+  line-height: 1.5;
+}
+.signer-did a {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--border);
+}
+.signer-did a:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.spec-cta {
+  margin: 20px 0 0;
+}
+.spec-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px 12px 12px;
+  background: var(--accent-tint);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--ink);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  transition: background 120ms ease, transform 120ms ease;
+}
+.spec-badge:hover {
+  background: #d9e8ea;
+  transform: translateY(-1px);
+}
+.spec-badge-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 3px;
+}
+.spec-badge-body {
+  font-weight: 500;
+}
+.spec-badge-arrow {
+  color: var(--accent);
+  font-weight: 500;
+  transition: transform 120ms ease;
+}
+.spec-badge:hover .spec-badge-arrow {
+  transform: translateX(2px);
+}
+
+.subscribe {
+  display: flex;
+  gap: 10px;
+  margin: 24px 0 0;
+  flex-wrap: wrap;
+}
+
+.subscribe input {
+  flex: 1;
+  min-width: 220px;
+  font-family: var(--sans);
+  font-size: 15px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.subscribe input:focus {
+  border-color: var(--accent);
+}
+
+.subscribe button {
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 12px 22px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.subscribe button:hover { opacity: 0.85; }
+
+.subscribe-note {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 12px;
+}
+
+.subscribe-success {
+  color: var(--accent);
+  font-weight: 500;
+  margin-top: 16px;
+  display: none;
+}
+
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 32px 32px 24px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+
+footer .footer-copy {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+footer .footer-links {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+}
+
+footer .footer-links a { margin: 0 4px; }
+
+footer .footer-license {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--faint);
+  line-height: 1.7;
+}
+
+footer .footer-license code {
+  font-family: var(--mono);
+  font-size: 11px;
+  background: var(--accent-tint);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--ink);
+}
+
+footer a {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--faint);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+footer a:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+@media (max-width: 520px) {
+  main { padding: 56px 24px 32px; }
+  .subscribe { flex-direction: column; }
+  .subscribe button { width: 100%; }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .grain { opacity: 0.2; }
+}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<main>
+  <p class="eyebrow">Published — Spec v0.1 is live</p>
+
+  <h1 class="wordmark">Cite<em>Sig</em><span class="tm" aria-hidden="true">™</span></h1>
+
+  <p class="tagline">
+    An open protocol for signing factual claims<br>so machines can verify them.
+  </p>
+
+  <section>
+    <h2>The problem</h2>
+    <p>
+      The internet has no machine-readable way to distinguish a verified fact from a plausible-sounding sentence. HTML has no <code>&lt;verified&gt;</code> tag. Search engines guess. Language models hallucinate. Regulators are starting to require provenance for AI outputs, and no standard yet exists to provide it.
+    </p>
+    <p class="muted">
+      CiteSig™ is the missing layer: a small, open protocol that lets publishers, journalists, researchers, and AI systems attach a signed reference to any factual claim — and lets browsers, verifiers, and downstream tools check that reference at rest and at render time.
+    </p>
+  </section>
+
+  <section>
+    <h2>Example — inline claim</h2>
+    <div class="spec-preview">
+      <div class="filename">
+        <span>article.html</span>
+        <span class="status">✓ verified</span>
+      </div>
+<pre><span class="c">&lt;!-- A claim, without CiteSig --&gt;</span>
+<span class="k">&lt;p&gt;</span>The Great Wall of China is visible from the Moon.<span class="k">&lt;/p&gt;</span>
+
+<span class="c">&lt;!-- A claim, with CiteSig --&gt;</span>
+<span class="k">&lt;p</span> <span class="k">data-citesig</span>=<span class="v">"cs:v1:9f2a...c8e1"</span>
+   <span class="k">data-verdict</span>=<span class="v">"refuted"</span>
+   <span class="k">data-confidence</span>=<span class="v">"0.02"</span><span class="k">&gt;</span>
+  The Great Wall of China is visible from the Moon.
+<span class="k">&lt;/p&gt;</span></pre>
+    </div>
+    <p class="muted" style="font-size: 14px; margin-top: 12px;">
+      The <code>data-citesig</code> attribute references a canonical claim record. Any verifier — a browser extension, an LLM output filter, an editorial workflow — resolves it against a public registry and returns a signed verdict.
+    </p>
+  </section>
+
+  <section>
+    <h2>Get started</h2>
+    <p style="margin-top: 0;">Reference implementations are published and stable. Both packages share the same test vectors as the spec.</p>
+    <div class="spec-preview">
+      <div class="filename">
+        <span>JavaScript / Node</span>
+        <span class="status"><a href="https://www.npmjs.com/package/@citesig/core" style="color: inherit;">npm →</a></span>
+      </div>
+<pre><span class="c"># Install</span>
+npm install <span class="v">@citesig/core</span>
+
+<span class="c">// Sign a claim</span>
+<span class="k">import</span> { sign, ed25519, didKeyFromEd25519PublicKey } <span class="k">from</span> <span class="v">'@citesig/core'</span>;
+<span class="k">import</span> { randomBytes } <span class="k">from</span> <span class="v">'crypto'</span>;
+<span class="k">const</span> seed = randomBytes(32);
+<span class="k">const</span> signer = <span class="k">didKeyFromEd25519PublicKey</span>(ed25519.<span class="k">publicKeyFromSeed</span>(seed));
+<span class="k">const</span> attestation = <span class="k">sign</span>({
+  claim: <span class="v">'The Earth orbits the Sun.'</span>,
+  signer,
+  sources: [{ url: <span class="v">'https://nasa.gov/...'</span> }],
+  issued_at: <span class="k">new</span> Date().toISOString(),
+}, seed);</pre>
+    </div>
+    <div class="spec-preview" style="margin-top: 20px;">
+      <div class="filename">
+        <span>Python</span>
+        <span class="status"><a href="https://pypi.org/project/citesig/" style="color: inherit;">PyPI →</a></span>
+      </div>
+<pre><span class="c"># Install</span>
+pip install <span class="v">citesig</span>
+
+<span class="c"># Sign a claim</span>
+<span class="k">import</span> os
+<span class="k">from</span> citesig <span class="k">import</span> sign, ed25519, did_key_from_ed25519_public_key
+seed = os.urandom(<span class="v">32</span>)
+signer = <span class="k">did_key_from_ed25519_public_key</span>(ed25519.<span class="k">public_key_from_seed</span>(seed))
+attestation = <span class="k">sign</span>({
+  <span class="v">'claim'</span>: <span class="v">'The Earth orbits the Sun.'</span>,
+  <span class="v">'signer'</span>: signer,
+  <span class="v">'sources'</span>: [{<span class="v">'url'</span>: <span class="v">'https://nasa.gov/...'</span>}],
+  <span class="v">'issued_at'</span>: <span class="v">'2026-09-04T20:00:00Z'</span>,
+}, seed)</pre>
+    </div>
+    <p class="muted" style="font-size: 14px; margin-top: 16px;">
+      Verify with <code>verify(attestation)</code>. Emit as an HTML attribute with <code>toCompact(attestation)</code> / <code>to_compact(attestation)</code>. Both libraries produce byte-identical output for the same input — the same signature verifies across every language.
+    </p>
+  </section>
+
+  <section>
+    <h2>Design principles</h2>
+    <ul>
+      <li>
+        <strong>Neutral standard, not a product.</strong>
+        <span>The spec, the reference implementations, and the registry contract are open. Anyone can run a verifier node.</span>
+      </li>
+      <li>
+        <strong>Cryptographically grounded.</strong>
+        <span>Ed25519 signatures. Content-addressed claim IDs. Independently verifiable without trusting a central authority.</span>
+      </li>
+      <li>
+        <strong>Human-readable, machine-checkable.</strong>
+        <span>Works in HTML, JSON, Markdown, plain text, and streaming LLM outputs. Degrades gracefully when unsupported.</span>
+      </li>
+      <li>
+        <strong>Composable with existing standards.</strong>
+        <span>Complements C2PA (media provenance), schema.org/ClaimReview, and W3C DIDs. Fills the missing text-claim slot.</span>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Why a standard, not a product</h2>
+    <p class="muted">
+      Most AI-trust tools score whether an answer <em>seems</em> correct — a probability, delivered inside a dashboard. CiteSig™ works at a different layer. It produces a cryptographic receipt that travels with the claim itself and lets anyone verify where the AI got it.
+    </p>
+
+    <div class="compare">
+      <div class="card">
+        <p class="cat">AI evaluation tools</p>
+        <p class="who">Score model output</p>
+        <p class="what">Statistical confidence that an AI answer looks trustworthy. Trust as a probability, delivered inside a dashboard.</p>
+      </div>
+      <div class="card us">
+        <p class="cat">CiteSig</p>
+        <p class="who">An <em>open</em> citation-signing standard</p>
+        <p class="what">Cryptographic proof of provenance attached to the claim itself. Travels with the content, verifiable by anyone, forever.</p>
+      </div>
+    </div>
+
+    <ul>
+      <li>
+        <strong>A protocol, not a platform.</strong>
+        <span>Adoption is the moat, not lock-in. Like OAuth or DKIM, the value grows as more publishers and models emit signed claims.</span>
+      </li>
+      <li>
+        <strong>Cryptographic, not statistical.</strong>
+        <span>Verifiers return a signed verdict, not a confidence score. Proof survives the model call and can be checked years later.</span>
+      </li>
+      <li>
+        <strong>Provider-agnostic.</strong>
+        <span>Works with any model, any host, any surface — HTML, JSON, Markdown, streaming LLM output. Not tied to a single vendor's stack.</span>
+      </li>
+      <li>
+        <strong>Complements, does not replace.</strong>
+        <span>Existing quality tools can consume CiteSig verdicts as an input signal. Governance and audit teams get the provenance trail they already need.</span>
+      </li>
+    </ul>
+
+    <div class="compare-pull">
+      <p>
+        Scores tell you an answer <em>might</em> be right. <em>A signature proves where it came from.</em>
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Status</h2>
+    <div class="status-block">
+      <div class="status-row">
+        <span class="label">Spec version</span>
+        <span class="value"><a href="https://github.com/citesig/spec/blob/main/spec/v0.1.md" class="spec-link">v0.1 — draft published</a></span>
+      </div>
+      <div class="status-row">
+        <span class="label">Test vectors</span>
+        <span class="value"><a href="https://github.com/citesig/spec/tree/main/test-vectors/v0.1" class="spec-link">6 signing vectors, reproducible</a></span>
+      </div>
+      <div class="status-row">
+        <span class="label">Reference impl</span>
+        <span class="value"><a href="https://www.npmjs.com/package/@citesig/core" class="spec-link">JavaScript</a> · <a href="https://pypi.org/project/citesig/" class="spec-link">Python</a> — v0.1.0 live</span>
+      </div>
+      <div class="status-row">
+        <span class="label">Governance</span>
+        <span class="value">Open, neutral</span>
+      </div>
+    </div>
+
+    <div class="signers-block">
+      <h3>Live signers</h3>
+      <div class="signer-card">
+        <div class="signer-name">
+          <span class="name"><a href="https://deepinquiry.ai">DeepInquiry</a></span>
+          <span class="since">Signing since 2026-09-04</span>
+        </div>
+        <div class="signer-did">
+          <a href="https://api.deepinquiry.ai/api/v1/citesig/signer">did:key:z6Mkh2XNEGwDi1Ue8pUNckdXfaN6jEjFtPVtd9eSVnEAXPc5</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec-cta">
+      <a href="https://github.com/citesig/spec" class="spec-badge">
+        <span class="spec-badge-tag">Draft</span>
+        <span class="spec-badge-body">Read the v0.1 spec on GitHub</span>
+        <span class="spec-badge-arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+
+    <form class="subscribe" id="subscribe" onsubmit="return handleSubmit(event)">
+      <input type="email" name="email" placeholder="your@email.com" required aria-label="Email">
+      <button type="submit">Notify me</button>
+    </form>
+    <p class="subscribe-note">Get a single email when v1.0 lands or a reference implementation ships. No newsletter, no marketing.</p>
+    <p class="subscribe-success" id="subscribe-success">Thanks — you'll hear from us when v1.0 lands.</p>
+  </section>
+</main>
+
+<footer>
+  <p class="footer-copy">© 2026 Epic Sky, LLC · CiteSig™ is a trademark of Epic Sky, LLC.</p>
+  <p class="footer-links">
+    <a href="https://github.com/citesig/spec">Specification</a> ·
+    <a href="https://github.com/citesig/verifier-extension">Verifier extension</a> ·
+    <a href="https://github.com/citesig">GitHub org</a> ·
+    <a href="https://www.deepinquiry.ai/terms">Terms</a> ·
+    <a href="https://www.deepinquiry.ai/privacy">Privacy</a>
+  </p>
+  <p class="footer-license">
+    Open protocol · incubated by <a href="https://www.deepinquiry.ai">DeepInquiry™</a><br>
+    Specification licensed <code>CC BY 4.0</code> · Reference implementations licensed <code>MIT</code>
+  </p>
+</footer>
+
+<script>
+function handleSubmit(event) {
+  event.preventDefault();
+  const form = event.target;
+  const email = form.email.value.trim();
+  if (!email) return false;
+
+  // For now, mailto fallback until we wire a proper endpoint.
+  // Cloudflare Pages Function will replace this in v0.2.
+  const subject = encodeURIComponent('CiteSig — notify at v0.1');
+  const body = encodeURIComponent(`Subscribe: ${email}\n\nSent from citesig.org`);
+  window.location.href = `mailto:hello@citesig.org?subject=${subject}&body=${body}`;
+
+  document.getElementById('subscribe-success').style.display = 'block';
+  form.style.display = 'none';
+  return false;
+}
+</script>
+</body>
+</html>
