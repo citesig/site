@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy — CiteSig Verifier</title>
+<meta name="description" content="Privacy policy for the CiteSig Verifier browser extension. Zero data collection, zero network requests, all verification runs locally in your browser.">
+<meta property="og:title" content="Privacy — CiteSig Verifier">
+<meta property="og:description" content="Zero data collection. Zero network requests. All Ed25519 signature verification runs locally via WebCrypto in your browser.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://citesig.org/privacy">
+<meta property="og:image" content="https://citesig.org/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://citesig.org/og-image.png">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://citesig.org/privacy">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<style>
+:root {
+  --bg: #F9F8F5;
+  --surface: #FFFFFF;
+  --ink: #0A1128;
+  --muted: #5A5F6F;
+  --faint: #A7ACB8;
+  --border: #E4E1D8;
+  --accent: #20808D;
+  --accent-tint: #E8F1F2;
+  --serif: 'Instrument Serif', ui-serif, Georgia, serif;
+  --sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.65;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.04 0 0 0 0 0.07 0 0 0 0 0.16 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 88px 32px 48px;
+  flex: 1;
+}
+
+.breadcrumb {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 28px;
+}
+
+.breadcrumb a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: opacity 120ms ease;
+}
+
+.breadcrumb a:hover { opacity: 0.7; }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-tint);
+}
+
+h1.page-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(44px, 6vw, 68px);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  margin: 0 0 20px;
+  color: var(--ink);
+}
+
+h1.page-title em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.subtitle {
+  font-family: var(--serif);
+  font-size: clamp(20px, 2.6vw, 26px);
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--muted);
+  margin: 0 0 40px;
+  max-width: 560px;
+}
+
+.meta {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 20px;
+  margin: 0 0 48px;
+  padding: 20px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.meta dt {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  align-self: center;
+}
+
+.meta dd {
+  margin: 0;
+  color: var(--ink);
+}
+
+.summary-card {
+  background: var(--accent-tint);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 24px 28px;
+  margin: 0 0 48px;
+}
+
+.summary-card p {
+  margin: 0;
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.summary-card strong { color: var(--accent); font-weight: 600; }
+
+section {
+  margin: 0 0 40px;
+}
+
+section h2 {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+section p {
+  margin: 0 0 14px;
+  color: var(--ink);
+}
+
+section p.muted {
+  color: var(--muted);
+}
+
+section a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-tint);
+  transition: border-color 120ms ease;
+}
+
+section a:hover {
+  border-bottom-color: var(--accent);
+}
+
+section code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: var(--accent-tint);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--ink);
+}
+
+section ul, section ol {
+  margin: 0 0 16px;
+  padding-left: 0;
+  list-style: none;
+}
+
+section ul li, section ol li {
+  padding: 8px 0 8px 28px;
+  position: relative;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border);
+}
+
+section ul li:last-child,
+section ol li:last-child {
+  border-bottom: none;
+}
+
+section ul li::before {
+  content: "→";
+  position: absolute;
+  left: 4px;
+  top: 8px;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 14px;
+}
+
+section ol {
+  counter-reset: step;
+}
+
+section ol li {
+  counter-increment: step;
+}
+
+section ol li::before {
+  content: counter(step) ".";
+  position: absolute;
+  left: 4px;
+  top: 8px;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.emphasis {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--accent);
+}
+
+.version-history li {
+  padding-left: 12px;
+}
+
+.version-history li::before { content: none; }
+
+footer {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  width: 100%;
+  margin: 32px auto 0;
+  padding: 32px 32px 48px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+
+footer p { margin: 8px 0; }
+
+footer a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 120ms ease;
+}
+
+footer a:hover { color: var(--accent); }
+
+footer .footer-links a {
+  margin: 0 6px;
+}
+
+footer code {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 1px 5px;
+  background: var(--accent-tint);
+  border-radius: 3px;
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  main { padding: 48px 20px 32px; }
+  .meta { grid-template-columns: 1fr; gap: 4px 0; padding: 16px 18px; }
+  .meta dt { margin-top: 8px; }
+  .meta dt:first-child { margin-top: 0; }
+}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<main>
+  <p class="breadcrumb"><a href="/">← citesig.org</a></p>
+
+  <p class="eyebrow">CiteSig Verifier · Privacy</p>
+
+  <h1 class="page-title">Nothing leaves <em>your browser</em>.</h1>
+  <p class="subtitle">The CiteSig Verifier extension performs every signature check locally. There is no server, no telemetry, no analytics, no account.</p>
+
+  <dl class="meta">
+    <dt>Last updated</dt><dd>September 8, 2026</dd>
+    <dt>Applies to</dt><dd>CiteSig Verifier browser extension (Chrome, Edge, Brave, Opera, all Chromium-based browsers) — all versions</dd>
+    <dt>Publisher</dt><dd>Epic Sky LLC, operator of CiteSig and DeepInquiry</dd>
+  </dl>
+
+  <div class="summary-card">
+    <p><strong>Plain-English summary.</strong> The CiteSig Verifier extension does not collect, transmit, store, sell, or share any of your personal data. It performs signature verification entirely inside your browser. It makes zero network requests to CiteSig, DeepInquiry, Epic Sky LLC, or any third party. There are no analytics, no telemetry, no crash reports, no user accounts, and no advertising.</p>
+  </div>
+
+  <section>
+    <h2>What the extension does</h2>
+    <p>When you visit a web page, the extension's content script scans the page's DOM for HTML elements with a <code>data-citesig</code> attribute — the CiteSig attestation format. For every attestation it finds, it:</p>
+    <ol>
+      <li>Parses the attestation locally using JavaScript.</li>
+      <li>If the attestation includes a <code>did:key:</code> signer, decodes the public key from the DID (this is a pure math operation — no network call).</li>
+      <li>Verifies the Ed25519 signature using the browser's built-in <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API">WebCrypto API</a>.</li>
+      <li>Renders a small colored badge next to the claim indicating verification status.</li>
+    </ol>
+    <p>When you click a badge, the extension displays an inspector panel showing the claim text, signer identifier, timestamp, and source list — all read from the attestation already present on the page.</p>
+  </section>
+
+  <section>
+    <h2>What data the extension accesses</h2>
+    <ul>
+      <li><strong>Page content, current tab only.</strong> The extension reads the DOM of the page you are currently viewing to find attestations. It never reads other tabs, browsing history, cookies, form data, passwords, or files. It uses the Chrome <a href="https://developer.chrome.com/docs/extensions/reference/api/activeTab"><code>activeTab</code></a> permission, which restricts access to the tab you have focused and only when you interact with the extension (opening the popup or clicking a badge).</li>
+      <li><strong>Nothing else.</strong> The extension does not have <code>&lt;all_urls&gt;</code> host permissions, does not use <code>storage</code>, does not use <code>tabs.query</code> for other tabs, does not use <code>webRequest</code>, does not use <code>cookies</code>, and does not use <code>identity</code>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What data leaves your browser</h2>
+    <p><span class="emphasis">Nothing.</span> The extension makes no HTTP, HTTPS, WebSocket, or any other network requests to any server. All signature verification uses locally computed WebCrypto operations against public keys extracted from the attestation itself. There is no server component to CiteSig Verifier v0.1.x.</p>
+    <p class="muted">Links inside the inspector panel (to source URLs, signer URLs, or the CiteSig homepage) open in a new tab only when you click them, using standard browser navigation — the same as clicking any link on any web page.</p>
+  </section>
+
+  <section>
+    <h2>What data we collect</h2>
+    <p><span class="emphasis">None.</span> Epic Sky LLC operates no server, endpoint, or logging infrastructure that receives data from this extension. We have no way to identify you, count installs, measure feature usage, or observe your behavior through this extension. We do not receive Chrome Web Store analytics beyond aggregate install counts that Google publishes to all extension developers.</p>
+  </section>
+
+  <section>
+    <h2>Third parties</h2>
+    <p>The extension bundles no third-party analytics SDKs, no advertising SDKs, no error-reporting SDKs, and makes no calls to any third-party service. The only external dependency is the browser's own WebCrypto API, which is a W3C standard implemented by the browser vendor (Google Chrome, Microsoft Edge, Brave Software, etc.).</p>
+  </section>
+
+  <section>
+    <h2>Permissions we request and why</h2>
+    <p>The extension's <code>manifest.json</code> requests exactly one permission:</p>
+    <ul>
+      <li><strong><code>activeTab</code></strong> — required to read the DOM of the current tab to find attestations. Without this permission the extension cannot function. <code>activeTab</code> is scoped to the tab you are currently viewing and does not grant access to other tabs, other windows, or your browsing history.</li>
+    </ul>
+    <p>The extension also uses <code>content_scripts</code> matching <code>&lt;all_urls&gt;</code> because attestations may appear on any web page. This is scoped injection (the content script runs on the page you visit), not a broad host-permission grant (the extension cannot read tabs you are not visiting or make cross-origin requests on your behalf).</p>
+    <p>We do not use <code>permissions.request</code> to escalate at runtime.</p>
+  </section>
+
+  <section>
+    <h2>Children</h2>
+    <p>The extension is not directed at children under 13 and does not knowingly collect any data from anyone of any age.</p>
+  </section>
+
+  <section>
+    <h2>Changes to this policy</h2>
+    <p>Because the extension collects no data, we do not anticipate substantive changes. If a future version adds any new behavior that could affect what data the extension accesses or transmits (for example, adding an HTTPS signer resolver in v0.2, which would need to fetch signer public keys from URLs the attestation itself declares), we will update this policy and note the change in the version history below before publishing the new version.</p>
+  </section>
+
+  <section>
+    <h2>Contact</h2>
+    <ul>
+      <li>Questions about this policy or the extension: <a href="mailto:hello@deepinquiry.ai">hello@deepinquiry.ai</a></li>
+      <li>Security disclosures: <a href="mailto:security@deepinquiry.ai">security@deepinquiry.ai</a></li>
+      <li>Source code and issue tracker: <a href="https://github.com/citesig/verifier-extension">github.com/citesig/verifier-extension</a></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Version history</h2>
+    <ul class="version-history">
+      <li><strong>September 8, 2026</strong> — initial publication covering CiteSig Verifier v0.1.2.</li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <p class="footer-copy">© 2026 Epic Sky, LLC · CiteSig™ is a trademark of Epic Sky, LLC.</p>
+  <p class="footer-links">
+    <a href="/">Home</a> ·
+    <a href="https://github.com/citesig/spec">Specification</a> ·
+    <a href="https://github.com/citesig/verifier-extension">Verifier extension</a> ·
+    <a href="https://github.com/citesig">GitHub org</a> ·
+    <a href="https://www.deepinquiry.ai/terms">Terms</a> ·
+    <a href="/privacy">Privacy</a>
+  </p>
+  <p>
+    Open protocol · incubated by <a href="https://www.deepinquiry.ai">DeepInquiry™</a><br>
+    Specification licensed <code>CC BY 4.0</code> · Reference implementations licensed <code>MIT</code>
+  </p>
+</footer>
+</body>
+</html>
