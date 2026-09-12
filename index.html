@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CiteSig — an open protocol for signed factual claims</title>
-<meta name="description" content="CiteSig is an open protocol for embedding cryptographic verification signatures inside factual claims — a trust layer for the AI era. v0.1 draft spec published.">
+<meta name="description" content="CiteSig is an open protocol for embedding cryptographic verification signatures inside factual claims — a trust layer for the AI era. Verifier extension live in the Chrome Web Store.">
 <meta property="og:title" content="CiteSig — signed factual claims for the AI era">
-<meta property="og:description" content="An open protocol for embedding cryptographic verification signatures inside factual claims. v0.1 draft spec published.">
+<meta property="og:description" content="An open protocol for embedding cryptographic verification signatures inside factual claims. Verifier extension live in the Chrome Web Store.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://citesig.org">
 <meta property="og:image" content="https://citesig.org/og-image.png">
@@ -131,6 +131,64 @@ h1.wordmark .tm {
 .tagline em {
   color: var(--accent);
   font-style: italic;
+}
+
+.hero-cta {
+  margin: 0 0 56px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+}
+
+.hero-cta-primary {
+  display: inline-flex;
+  flex-direction: column;
+  padding: 14px 24px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-family: var(--sans);
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+}
+
+.hero-cta-primary:hover {
+  transform: translateY(-1px);
+  background: #0f5a63;
+  box-shadow: 0 6px 20px rgba(15, 90, 99, 0.22);
+}
+
+.hero-cta-primary-label {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1.2;
+}
+
+.hero-cta-primary-meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.82;
+  margin-top: 4px;
+}
+
+.hero-cta-secondary {
+  font-family: var(--sans);
+  font-size: 15px;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--muted);
+  padding-bottom: 2px;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.hero-cta-secondary:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
 }
 
 section {
@@ -592,13 +650,21 @@ footer a:hover {
 <div class="grain" aria-hidden="true"></div>
 
 <main>
-  <p class="eyebrow">Published — Spec v0.1 is live</p>
+  <p class="eyebrow">Live in Chrome Web Store · Spec v0.1 published</p>
 
   <h1 class="wordmark">Cite<em>Sig</em><span class="tm" aria-hidden="true">™</span></h1>
 
   <p class="tagline">
     An open protocol for signing factual claims<br>so machines can verify them.
   </p>
+
+  <div class="hero-cta">
+    <a href="https://chromewebstore.google.com/detail/citesig-verifier/keffobofbhdmfdgepbkmcihclmmcmokj" class="hero-cta-primary" target="_blank" rel="noopener">
+      <span class="hero-cta-primary-label">Add CiteSig Verifier to Chrome</span>
+      <span class="hero-cta-primary-meta">Free · v0.1.2 · Chrome Web Store</span>
+    </a>
+    <a href="https://github.com/citesig/spec" class="hero-cta-secondary">Read the spec</a>
+  </div>
 
   <section>
     <h2>The problem</h2>
@@ -763,6 +829,10 @@ attestation = <span class="k">sign</span>({
         <span class="value"><a href="https://www.npmjs.com/package/@citesig/core" class="spec-link">JavaScript</a> · <a href="https://pypi.org/project/citesig/" class="spec-link">Python</a> — v0.1.0 live</span>
       </div>
       <div class="status-row">
+        <span class="label">Verifier</span>
+        <span class="value"><a href="https://chromewebstore.google.com/detail/citesig-verifier/keffobofbhdmfdgepbkmcihclmmcmokj" class="spec-link" target="_blank" rel="noopener">Chrome extension</a> — v0.1.2 live in Chrome Web Store</span>
+      </div>
+      <div class="status-row">
         <span class="label">Governance</span>
         <span class="value">Open, neutral</span>
       </div>
@@ -802,7 +872,7 @@ attestation = <span class="k">sign</span>({
   <p class="footer-copy">© 2026 Epic Sky, LLC · CiteSig™ is a trademark of Epic Sky, LLC.</p>
   <p class="footer-links">
     <a href="https://github.com/citesig/spec">Specification</a> ·
-    <a href="https://github.com/citesig/verifier-extension">Verifier extension</a> ·
+    <a href="https://chromewebstore.google.com/detail/citesig-verifier/keffobofbhdmfdgepbkmcihclmmcmokj" target="_blank" rel="noopener">Verifier extension</a> ·
     <a href="https://github.com/citesig">GitHub org</a> ·
     <a href="https://www.deepinquiry.ai/terms">Terms</a> ·
     <a href="/privacy">Privacy</a>
